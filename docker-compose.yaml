@@ -1,4 +1,5 @@
 version: "3.9"
+
 services:
   backend:
     build: ./backend
@@ -6,8 +7,7 @@ services:
     volumes:
       - sqlite_data:/var/data/sqlite
       - ./sample_data:/app/sample_data
-    ports:
-      - "9000:8000"
+    # host portu publish ETMİYORUZ; coolify/traefik iç ağdan erişecek
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -16,8 +16,9 @@ services:
 
   frontend:
     build: ./frontend
-    ports:
-      - "3000:3000"
+    environment:
+      # frontend, coolify links ile /api'ye proxylanacak
+      VITE_API_BASE: /api
     depends_on:
       - backend
     healthcheck:
@@ -26,20 +27,5 @@ services:
       timeout: 5s
       retries: 3
 
-  caddy:
-    image: caddy:alpine
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - backend
-      - frontend
-
 volumes:
   sqlite_data:
-  caddy_data:
-  caddy_config:
