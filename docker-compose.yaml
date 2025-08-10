@@ -7,7 +7,7 @@ services:
       - sqlite_data:/var/data/sqlite
       - ./sample_data:/app/sample_data
     ports:
-      - "8000:8000"
+      - "9000:8000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
