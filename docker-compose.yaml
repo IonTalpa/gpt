@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    env_file: .env
+    volumes:
+      - sqlite_data:/var/data/sqlite
+      - ./sample_data:/app/sample_data
+    # host portu publish ETMİYORUZ; coolify/traefik iç ağdan erişecek
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    environment:
+      # frontend, coolify links ile /api'ye proxylanacak
+      VITE_API_BASE: /api
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  sqlite_data:
